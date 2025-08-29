@@ -12,3 +12,42 @@ yarn-error.log*
 # IDE files
 .idea
 .vscode
+
+# macOS
+.DS_Store
+
+# Tooling
+.qodo
+
+# Source maps
+*.map
+
+# TypeScript
+*.tsbuildinfo
+
+# Lint cache
+.eslintcache
+
+# Env files
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Coverage
+coverage/
+
+# Temp files
+tmp/
+temp/
+.TemporaryItems
+
+# Logs (catch-all)
+*.log
+logs/
+pnpm-debug.log*
+
+# Chrome extension packaging artifacts
+*.crx
+*.pem
+*.zip
