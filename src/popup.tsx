@@ -14,6 +14,7 @@ type View = 'main' | 'recent';
 const Popup = () => {
   const [allItems, setAllItems] = useState<CopiedItem[]>([]);
   const [view, setView] = useState<View>('main');
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   useEffect(() => {
     const updateItems = () => {
@@ -65,13 +66,38 @@ const Popup = () => {
 
   const hasNonFavorites = allItems.some(item => !item.favorite);
 
+  const handleItemClick = async (item: CopiedItem) => {
+    const text = item.text;
+    const flash = () => {
+      setCopiedId(item.id);
+      setTimeout(() => setCopiedId(null), 1000);
+    };
+
+    try {
+      await navigator.clipboard.writeText(text);
+      flash();
+      return;
+    } catch (err) {
+      console.warn('Popup: navigator.clipboard.writeText failed, trying background fallback', err);
+    }
+
+    try {
+      chrome.runtime.sendMessage({ type: 'popupCopy', text }, (resp) => {
+        if (resp && resp.ok) flash();
+      });
+    } catch (err) {
+      console.error('Popup: failed to message background for copy', err);
+    }
+  };
+
   const renderList = (title: string, items: CopiedItem[]) => (
     <div>
       <h2>{title}</h2>
       <ul>
         {items.map((item) => (
-          <li key={item.id}>
-              <span onClick={() => navigator.clipboard.writeText(item.text)}>{item.text}</span>
+          <li key={item.id} className={copiedId === item.id ? 'copied' : ''}>
+              <span onClick={() => handleItemClick(item)}>{item.text}</span>
+              {copiedId === item.id && <span className="copied-badge">✓</span>}
               <div className="item-actions">
                 <button
                   className={`star-btn ${item.favorite ? 'favorited' : ''}`}

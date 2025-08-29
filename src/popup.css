@@ -30,6 +30,17 @@ li:hover {
   cursor: pointer;
 }
 
+li.copied {
+  background-color: #e6ffed;
+  transition: background-color 150ms ease-in-out;
+}
+
+.copied-badge {
+  color: #22a559;
+  font-weight: 600;
+  margin-left: 6px;
+}
+
 button {
   margin-left: 10px;
 }
