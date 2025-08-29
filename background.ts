@@ -7,9 +7,11 @@ interface CopiedItem {
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  console.log("Message received in background script:", request);
   if (request.type === "copiedText") {
     const newText = request.text;
     chrome.storage.local.get({ copiedItems: [] }, (result) => {
+      console.log("Current items from storage:", result.copiedItems);
       let items = result.copiedItems;
 
       // Handle migration from old string[] format
@@ -45,7 +47,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         items = items.slice(0, 100);
       }
 
-      chrome.storage.local.set({ copiedItems: items });
+      chrome.storage.local.set({ copiedItems: items }, () => {
+        console.log("Updated items saved to storage:", items);
+      });
     });
   }
 });
