@@ -1,0 +1,1 @@
+(()=>{"use strict";document.addEventListener("copy",e=>{var t;const o=null===(t=window.getSelection())||void 0===t?void 0:t.toString();o&&chrome.runtime.sendMessage({type:"copiedText",text:o})}),["copy","cut","paste"].forEach(e=>{document.addEventListener(e,e=>e.stopImmediatePropagation(),!0)})})();

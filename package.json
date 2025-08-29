@@ -1,0 +1,25 @@
+{
+  "name": "copypasteplus",
+  "version": "1.0.0",
+  "description": "Expand the functionality of copy paste.",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack --config webpack.config.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/chrome": "^0.0.251",
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
+    "ts-loader": "^9.5.0",
+    "typescript": "^5.2.2",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
