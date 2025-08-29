@@ -93,6 +93,7 @@ const Popup = () => {
 
   const favorites = allItems.filter(item => item.favorite);
   const mostUsed = [...allItems].sort((a, b) => b.count - a.count).slice(0, 10);
+  const mostRecent = [...allItems].sort((a, b) => b.timestamp - a.timestamp).slice(0, 10);
 
   return (
     <div style={{ width: '300px' }}>
@@ -103,6 +104,7 @@ const Popup = () => {
       </div>
       {renderList("Favorites", favorites)}
       {renderList("Most Used", mostUsed)}
+      {renderList("Most Recent", mostRecent)}
     </div>
   );
 };
