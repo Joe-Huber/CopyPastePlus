@@ -1,10 +1,15 @@
-document.addEventListener("copy", (e) => {
+console.log("CopyPaste+ content script loaded.");
+
+document.addEventListener('copy', (e) => {
+  console.log("Copy event detected by CopyPaste+!");
   const selectedText = window.getSelection()?.toString();
   if (selectedText) {
-    chrome.runtime.sendMessage({type: "copiedText", text: selectedText});
+    console.log("Sending text to background:", selectedText);
+    chrome.runtime.sendMessage({ type: "copiedText", text: selectedText });
   }
-});
+  e.stopImmediatePropagation();
+}, true);
 
-['copy', 'cut', 'paste'].forEach(event => {
+['cut', 'paste'].forEach(event => {
   document.addEventListener(event, e => e.stopImmediatePropagation(), true);
 });

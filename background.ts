@@ -7,14 +7,13 @@ interface CopiedItem {
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  console.log("Message received in background script:", request);
+  console.log("Background script received a message:", request);
   if (request.type === "copiedText") {
     const newText = request.text;
     chrome.storage.local.get({ copiedItems: [] }, (result) => {
       console.log("Current items from storage:", result.copiedItems);
       let items = result.copiedItems;
 
-      // Handle migration from old string[] format
       if (items.length > 0 && typeof items[0] === 'string') {
         items = items.map((text: any) => ({
           id: self.crypto.randomUUID(),
