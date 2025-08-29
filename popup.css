@@ -27,3 +27,20 @@ li:hover {
 button {
   margin-left: 10px;
 }
+
+.star-btn {
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  color: #999;
+}
+
+.star-btn.favorited {
+  color: #f5a623; /* warm gold */
+}
+
+.star-btn:hover {
+  color: #f5a623;
+}

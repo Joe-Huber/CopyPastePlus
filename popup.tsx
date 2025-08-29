@@ -62,7 +62,14 @@ const Popup = () => {
         {items.map((item) => (
           <li key={item.id}>
             <span onClick={() => handleItemClick(item.text)}>{item.text}</span>
-            <button onClick={() => handleFavoriteClick(item)}>Favorite</button>
+            <button
+              className={`star-btn ${item.favorite ? 'favorited' : ''}`}
+              onClick={(e) => { e.stopPropagation(); handleFavoriteClick(item); }}
+              aria-label={item.favorite ? 'Unfavorite' : 'Favorite'}
+              title={item.favorite ? 'Unfavorite' : 'Favorite'}
+            >
+              {item.favorite ? '★' : '☆'}
+            </button>
           </li>
         ))}
       </ul>
