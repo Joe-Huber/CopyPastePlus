@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>CopyPaste+ Offscreen</title>
+  </head>
+  <body>
+    <script>
+      const runtime = (globalThis.chrome && chrome.runtime) ? chrome.runtime : null;
+      if (runtime) {
+        runtime.onMessage.addListener(async (msg) => {
+          if (!msg || msg.type !== 'write-clipboard') return;
+          const { requestId, text } = msg;
+          try {
+            await navigator.clipboard.writeText(text);
+            runtime.sendMessage({ type: 'write-clipboard-result', requestId, ok: true });
+          } catch (err) {
+            runtime.sendMessage({ type: 'write-clipboard-result', requestId, ok: false, error: String(err) });
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

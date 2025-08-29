@@ -41,11 +41,7 @@ const Popup = () => {
     };
   }, []);
 
-  const handleItemClick = (text: string) => {
-    navigator.clipboard.writeText(text).then(() => {
-      window.close();
-    });
-  };
+
 
   const handleFavoriteClick = (itemToFavorite: CopiedItem) => {
     const updatedItems = allItems.map(item =>
@@ -61,8 +57,7 @@ const Popup = () => {
       <ul>
         {items.map((item) => (
           <li key={item.id}>
-            <span onClick={() => handleItemClick(item.text)}>{item.text}</span>
-            <button
+              <span onClick={() => navigator.clipboard.writeText(item.text)}>{item.text}</span>            <button
               className={`star-btn ${item.favorite ? 'favorited' : ''}`}
               onClick={(e) => { e.stopPropagation(); handleFavoriteClick(item); }}
               aria-label={item.favorite ? 'Unfavorite' : 'Favorite'}
