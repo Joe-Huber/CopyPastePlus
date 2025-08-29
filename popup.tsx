@@ -51,6 +51,14 @@ const Popup = () => {
     chrome.storage.local.set({ copiedItems: updatedItems });
   };
 
+  const clearNonFavorites = () => {
+    const kept = allItems.filter(item => item.favorite);
+    setAllItems(kept);
+    chrome.storage.local.set({ copiedItems: kept });
+  };
+
+  const hasNonFavorites = allItems.some(item => !item.favorite);
+
   const renderList = (title: string, items: CopiedItem[]) => (
     <div>
       <h2>{title}</h2>
@@ -74,7 +82,10 @@ const Popup = () => {
   if (view === 'recent') {
     return (
       <div style={{ width: '300px' }}>
-        <button onClick={() => setView('main')}>Back</button>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button onClick={() => setView('main')}>Back</button>
+          <button onClick={clearNonFavorites} disabled={!hasNonFavorites}>Clear non-favorites</button>
+        </div>
         {renderList("Recent Items", allItems)}
       </div>
     );
@@ -86,9 +97,12 @@ const Popup = () => {
   return (
     <div style={{ width: '300px' }}>
       <h1>CopyPaste+</h1>
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+        <button onClick={clearNonFavorites} disabled={!hasNonFavorites}>Clear non-favorites</button>
+        <button onClick={() => setView('recent')}>View All Recent Copies</button>
+      </div>
       {renderList("Favorites", favorites)}
       {renderList("Most Used", mostUsed)}
-      <button onClick={() => setView('recent')}>View All Recent Copies</button>
     </div>
   );
 };
