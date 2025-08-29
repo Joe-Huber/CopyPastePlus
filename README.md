@@ -1,6 +1,6 @@
 # CopyPaste+
 
-<img src="icons/icon128.png" alt="CopyPaste+ icon" width="96" height="96" />
+<img src="icons/banner.png" alt="CopyPaste+ banner" />
 
 Expand the functionality of copy/paste in Chrome. CopyPaste+ captures your copied text and gives you a history with favorites and usage counts, available right from the toolbar popup.
 
