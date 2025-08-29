@@ -51,6 +51,12 @@ const Popup = () => {
     chrome.storage.local.set({ copiedItems: updatedItems });
   };
 
+  const handleDeleteClick = (id: string) => {
+    const updatedItems = allItems.filter(item => item.id !== id);
+    setAllItems(updatedItems);
+    chrome.storage.local.set({ copiedItems: updatedItems });
+  };
+
   const clearNonFavorites = () => {
     const kept = allItems.filter(item => item.favorite);
     setAllItems(kept);
@@ -65,14 +71,23 @@ const Popup = () => {
       <ul>
         {items.map((item) => (
           <li key={item.id}>
-              <span onClick={() => navigator.clipboard.writeText(item.text)}>{item.text}</span>            <button
-              className={`star-btn ${item.favorite ? 'favorited' : ''}`}
-              onClick={(e) => { e.stopPropagation(); handleFavoriteClick(item); }}
-              aria-label={item.favorite ? 'Unfavorite' : 'Favorite'}
-              title={item.favorite ? 'Unfavorite' : 'Favorite'}
-            >
-              {item.favorite ? '★' : '☆'}
-            </button>
+              <span onClick={() => navigator.clipboard.writeText(item.text)}>{item.text}</span>
+              <div className="item-actions">
+                <button
+                  className={`star-btn ${item.favorite ? 'favorited' : ''}`}
+                  onClick={(e) => { e.stopPropagation(); handleFavoriteClick(item); }}
+                  aria-label={item.favorite ? 'Unfavorite' : 'Favorite'}
+                  title={item.favorite ? 'Unfavorite' : 'Favorite'}
+                >
+                  {item.favorite ? '★' : '☆'}
+                </button>
+                <button
+                  className="trash-btn"
+                  onClick={(e) => { e.stopPropagation(); handleDeleteClick(item.id); }}
+                  aria-label="Delete"
+                  title="Delete"
+                >🗑</button>
+              </div>
           </li>
         ))}
       </ul>
