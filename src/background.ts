@@ -54,7 +54,7 @@ async function ensureOffscreenDocument() {
   if (!offscreen) {
     throw new Error('Offscreen API unavailable in this Chrome version');
   }
-  const url = chrome.runtime.getURL('offscreen.html');
+  const url = chrome.runtime.getURL('src/offscreen.html');
   try {
     await offscreen.createDocument({
       url,

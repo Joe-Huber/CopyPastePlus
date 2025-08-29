@@ -2,9 +2,9 @@ const path = require('path');
 
 module.exports = {
   entry: {
-    popup: './popup.tsx',
-    background: './background.ts',
-    content: './content.ts',
+    popup: './src/popup.tsx',
+    background: './src/background.ts',
+    content: './src/content.ts',
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
