@@ -1,76 +1,194 @@
+/* Modernized popup styling with light/dark themes */
+:root {
+  --bg: #f6f7fb;
+  --panel: #ffffff;
+  --text: #0f172a;
+  --muted: #64748b;
+  --border: #e5e7eb;
+  --border-strong: #d1d5db;
+  --hover: #f8fafc;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --success: #16a34a;
+  --success-tint: #e9f9ef;
+  --danger: #dc2626;
+  --gold: #f59e0b;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0b1020;
+    --panel: #0f172a;
+    --text: #e5e7eb;
+    --muted: #94a3b8;
+    --border: #24314a;
+    --border-strong: #314263;
+    --hover: #17213b;
+    --primary: #60a5fa;
+    --primary-hover: #93c5fd;
+    --success: #22c55e;
+    --success-tint: #0a2a17;
+    --danger: #ef4444;
+    --gold: #fbbf24;
+  }
+}
+
 body {
-  font-family: sans-serif;
-  font-size: 14px;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
+  font-size: 13px;
+  color: var(--text);
+  background: var(--bg);
   margin: 0;
-  padding: 10px;
+  padding: 10px 12px;
+  min-width: 300px; /* matches inline width in markup */
+}
+
+h1 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: .2px;
+  color: var(--text);
+}
+
+h2 {
+  margin: 12px 0 6px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .6px;
+  color: var(--muted);
 }
 
 ul {
   list-style: none;
   padding: 0;
-  margin: 0;
+  margin: 0 0 8px;
 }
 
 li {
-  padding: 5px;
-  border-bottom: 1px solid #eee;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
+  background: var(--panel);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+  transition: background-color 150ms ease, border-color 150ms ease, transform 80ms ease;
+}
+
+li + li {
+  margin-top: 6px;
 }
 
 .item-actions {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+}
+
+/* Truncate long text nicely */
+li > span:first-child {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 li:hover {
-  background-color: #f5f5f5;
+  background-color: var(--hover);
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
   cursor: pointer;
 }
 
 li.copied {
-  background-color: #e6ffed;
-  transition: background-color 150ms ease-in-out;
+  background-color: var(--success-tint);
+  border-color: rgba(34, 197, 94, 0.35);
+  transition: background-color 150ms ease-in-out, border-color 150ms ease-in-out;
 }
 
 .copied-badge {
-  color: #22a559;
+  color: var(--success);
+  font-weight: 700;
+  font-size: 12px;
+  margin-left: 8px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  background: var(--success-tint);
+}
+
+/* Buttons - general (not icon buttons) */
+button:not(.star-btn):not(.trash-btn) {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  padding: 6px 10px;
+  border-radius: 8px;
   font-weight: 600;
-  margin-left: 6px;
+  font-size: 12px;
+  letter-spacing: .2px;
+  transition: background-color 150ms ease, border-color 150ms ease, transform 60ms ease;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
 }
 
-button {
-  margin-left: 10px;
+button:not(.star-btn):not(.trash-btn):hover {
+  background: var(--hover);
+  border-color: var(--border-strong);
 }
 
-.star-btn {
-  border: none;
+button:not(.star-btn):not(.trash-btn):active {
+  transform: translateY(1px);
+}
+
+button:not(.star-btn):not(.trash-btn):disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Icon buttons */
+.star-btn,
+.trash-btn {
+  border: 1px solid transparent;
   background: transparent;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
   font-size: 16px;
   line-height: 1;
   cursor: pointer;
-  color: #999;
+  color: #9aa4b2;
+  transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
+  padding: 0;
+}
+
+.star-btn:hover,
+.trash-btn:hover {
+  background: var(--hover);
+  border-color: var(--border);
+  color: var(--text);
 }
 
 .trash-btn {
-  border: none;
-  background: transparent;
+  color: var(--danger);
   font-size: 14px;
-  line-height: 1;
-  cursor: pointer;
-  color: #c33;
 }
 
 .trash-btn:hover {
-  color: #e33;
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.3);
 }
 
 .star-btn.favorited {
-  color: #f5a623; /* warm gold */
+  color: var(--gold); /* warm gold */
 }
 
 .star-btn:hover {
-  color: #f5a623;
+  color: var(--gold);
 }
