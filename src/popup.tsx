@@ -18,10 +18,11 @@ const Popup = () => {
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
   const [truncateItems, setTruncateItems] = useState<boolean>(true);
   const [hideMostRecent, setHideMostRecent] = useState<boolean>(false);
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
 
   useEffect(() => {
     const updateItems = () => {
-      chrome.storage.local.get({ copiedItems: [], truncateItems: true, hideMostRecent: false }, (result) => {
+      chrome.storage.local.get({ copiedItems: [], truncateItems: true, hideMostRecent: false, theme: 'dark' }, (result) => {
         let items = result.copiedItems;
         if (items.length > 0 && typeof items[0] === 'string') {
           items = items.map((text: any) => ({
@@ -36,6 +37,7 @@ const Popup = () => {
         setAllItems(items);
         setTruncateItems(result.truncateItems);
         setHideMostRecent(result.hideMostRecent);
+        setTheme(result.theme);
       });
     };
 
@@ -55,6 +57,22 @@ const Popup = () => {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, []);
 
+  useEffect(() => {
+    const id = 'light-theme-css';
+    const href = './popup.light.css';
+    const existing = document.getElementById(id) as HTMLLinkElement | null;
+    if (theme === 'light') {
+      if (!existing) {
+        const link = document.createElement('link');
+        link.id = id;
+        link.rel = 'stylesheet';
+        link.href = href;
+        document.head.appendChild(link);
+      }
+    } else {
+      if (existing) existing.remove();
+    }
+  }, [theme]);
 
 
   const handleFavoriteClick = (itemToFavorite: CopiedItem) => {
@@ -177,6 +195,20 @@ const Popup = () => {
                 <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <input
                     type="checkbox"
+                    checked={theme === 'light'}
+                    onChange={(e) => {
+                      const light = (e.target as HTMLInputElement).checked;
+                      const next = light ? 'light' : 'dark';
+                      setTheme(next);
+                      chrome.storage.local.set({ theme: next });
+                    }}
+                  />
+                  Use light mode
+                </label>
+
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 10 }}>
+                  <input
+                    type="checkbox"
                     checked={truncateItems}
                     onChange={(e) => {
                       const val = (e.target as HTMLInputElement).checked;
@@ -259,6 +291,20 @@ const Popup = () => {
             </div>
             <div className="modal-content">
               <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <input
+                  type="checkbox"
+                  checked={theme === 'light'}
+                  onChange={(e) => {
+                    const light = (e.target as HTMLInputElement).checked;
+                    const next = light ? 'light' : 'dark';
+                    setTheme(next);
+                    chrome.storage.local.set({ theme: next });
+                  }}
+                />
+                Use light mode
+              </label>
+
+              <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 10 }}>
                 <input
                   type="checkbox"
                   checked={truncateItems}

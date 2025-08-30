@@ -1,0 +1,51 @@
+/* Light theme overrides for CopyPaste+ popup */
+:root {
+  /* Softer, airy light palette */
+  --bg: #f9fafb;             /* page background */
+  --panel: #ffffff;           /* card/panel */
+  --text: #0f172a;            /* primary text */
+  --muted: #6b7280;           /* secondary text */
+  --border: #e6e8ef;          /* subtle borders */
+  --border-strong: #d5d9e3;   /* hovered borders */
+  --hover: #f3f4f6;           /* hover background */
+  --primary: #2563eb;         /* brand blue */
+  --primary-hover: #1e40af;   /* darker blue */
+  --success: #16a34a;         /* success green */
+  --success-tint: #eaf7ee;    /* success tint */
+  --danger: #dc2626;          /* danger red */
+  --gold: #f59e0b;            /* star gold */
+}
+
+/* Slightly rounder look for light mode */
+body {
+  background: var(--bg);
+}
+
+.top-bar {
+  margin-bottom: 8px;
+}
+
+.icon-btn {
+  background: var(--panel);
+}
+
+/* Modal tweaks to feel light */
+.modal {
+  background: var(--panel);
+  border-color: var(--border);
+}
+
+.modal-header {
+  border-bottom-color: var(--border);
+}
+
+/* Keep list items crisp in light theme */
+li {
+  background: var(--panel);
+  border-color: var(--border);
+}
+
+li:hover {
+  background: var(--hover);
+  border-color: var(--border-strong);
+}
