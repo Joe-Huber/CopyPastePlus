@@ -88,7 +88,8 @@ Privacy: CopyPaste+ does not send your data anywhere. All history is stored loca
   - Check background logs in the Service Worker console for errors
 - Moji-bake stars (e.g., `â˜†`)
   - Ensure `<meta charset="utf-8">` is present in `popup.html` (it is in this repo)
-
+- Error in Chrome developer settings and nothing gets added from the clipbaord anymore
+  - Reload the extentsion and make sure you are on a refreshed tab. If your tab is from before the extentsion's most recent change you made, the incorrect script will be injected and it won't work.
 
 ## Contributing
 
