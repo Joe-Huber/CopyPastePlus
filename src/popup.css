@@ -163,12 +163,20 @@ li + li {
   gap: 8px;
 }
 
-/* Truncate long text nicely */
-li > span:first-child {
+/* Truncation behavior controlled by setting */
+li .item-text {
   flex: 1 1 auto;
+}
+
+li .item-text.truncate {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+li .item-text.wrap {
+  white-space: normal;
+  word-break: break-word;
 }
 
 li:hover {

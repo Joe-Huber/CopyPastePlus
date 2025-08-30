@@ -16,10 +16,11 @@ const Popup = () => {
   const [view, setView] = useState<View>('main');
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
+  const [truncateItems, setTruncateItems] = useState<boolean>(true);
 
   useEffect(() => {
     const updateItems = () => {
-      chrome.storage.local.get({ copiedItems: [] }, (result) => {
+      chrome.storage.local.get({ copiedItems: [], truncateItems: true }, (result) => {
         let items = result.copiedItems;
         if (items.length > 0 && typeof items[0] === 'string') {
           items = items.map((text: any) => ({
@@ -32,6 +33,7 @@ const Popup = () => {
           chrome.storage.local.set({ copiedItems: items });
         }
         setAllItems(items);
+        setTruncateItems(result.truncateItems);
       });
     };
 
@@ -105,7 +107,7 @@ const Popup = () => {
       <ul>
         {items.map((item) => (
           <li key={item.id} className={copiedId === item.id ? 'copied' : ''}>
-              <span onClick={() => handleItemClick(item)}>{item.text}</span>
+              <span className={`item-text ${truncateItems ? 'truncate' : 'wrap'}`} onClick={() => handleItemClick(item)}>{item.text}</span>
               {copiedId === item.id && <span className="copied-badge">✓</span>}
               <div className="item-actions">
                 <button
@@ -170,7 +172,21 @@ const Popup = () => {
                 </button>
               </div>
               <div className="modal-content">
-                <p>Settings content placeholder.</p>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <input
+                    type="checkbox"
+                    checked={truncateItems}
+                    onChange={(e) => {
+                      const val = (e.target as HTMLInputElement).checked;
+                      setTruncateItems(val);
+                      chrome.storage.local.set({ truncateItems: val });
+                    }}
+                  />
+                  Truncate long items
+                </label>
+                <p style={{ marginTop: 8, color: 'var(--muted)' }}>
+                  When enabled, long items are shortened with an ellipsis.
+                </p>
               </div>
             </div>
           </div>
@@ -227,7 +243,21 @@ const Popup = () => {
               </button>
             </div>
             <div className="modal-content">
-              <p>Settings content placeholder.</p>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <input
+                  type="checkbox"
+                  checked={truncateItems}
+                  onChange={(e) => {
+                    const val = (e.target as HTMLInputElement).checked;
+                    setTruncateItems(val);
+                    chrome.storage.local.set({ truncateItems: val });
+                  }}
+                />
+                Truncate long items
+              </label>
+              <p style={{ marginTop: 8, color: 'var(--muted)' }}>
+                When enabled, long items are shortened with an ellipsis.
+              </p>
             </div>
           </div>
         </div>
