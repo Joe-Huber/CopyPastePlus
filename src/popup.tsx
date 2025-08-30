@@ -15,6 +15,7 @@ const Popup = () => {
   const [allItems, setAllItems] = useState<CopiedItem[]>([]);
   const [view, setView] = useState<View>('main');
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const updateItems = () => {
@@ -40,6 +41,14 @@ const Popup = () => {
     return () => {
       chrome.storage.onChanged.removeListener(updateItems);
     };
+  }, []);
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSettingsOpen(false);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
   }, []);
 
 
@@ -122,12 +131,50 @@ const Popup = () => {
 
   if (view === 'recent') {
     return (
-      <div style={{ width: '300px' }}>
-        <div style={{ display: 'flex', gap: '8px' }}>
+      <div className="popup-container">
+        <div className="top-bar">
+          <h1>CopyPaste+</h1>
+          <button
+            className="icon-btn settings-btn"
+            aria-label={settingsOpen ? 'Close settings' : 'Open settings'}
+            title="Settings"
+            onClick={() => setSettingsOpen((v) => !v)}
+          >
+            ⚙️
+          </button>
+        </div>
+        <div className="controls-row">
           <button onClick={() => setView('main')}>Back</button>
           <button onClick={clearNonFavorites} disabled={!hasNonFavorites}>Clear non-favorites</button>
         </div>
         {renderList("Recent Items", allItems)}
+
+        {settingsOpen && (
+          <div className="modal-overlay" onClick={() => setSettingsOpen(false)}>
+            <div
+              className="modal"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="settings-title"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="modal-header">
+                <h3 id="settings-title" style={{ margin: 0, fontSize: '14px' }}>Settings</h3>
+                <button
+                  className="icon-btn close-btn"
+                  aria-label="Close settings"
+                  title="Close"
+                  onClick={() => setSettingsOpen(false)}
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="modal-content">
+                <p>Settings content placeholder.</p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -137,15 +184,54 @@ const Popup = () => {
   const mostRecent = [...allItems].sort((a, b) => b.timestamp - a.timestamp).slice(0, 10);
 
   return (
-    <div style={{ width: '300px' }}>
-      <h1>CopyPaste+</h1>
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+    <div className="popup-container">
+      <div className="top-bar">
+        <h1>CopyPaste+</h1>
+        <button
+          className="icon-btn settings-btn"
+          aria-label={settingsOpen ? 'Close settings' : 'Open settings'}
+          title="Settings"
+          onClick={() => setSettingsOpen((v) => !v)}
+        >
+          ⚙️
+        </button>
+      </div>
+
+      <div className="controls-row">
         <button onClick={clearNonFavorites} disabled={!hasNonFavorites}>Clear non-favorites</button>
         <button onClick={() => setView('recent')}>View All Recent Copies</button>
       </div>
+
       {renderList("Favorites", favorites)}
       {renderList("Most Used", mostUsed)}
       {renderList("Most Recent", mostRecent)}
+
+      {settingsOpen && (
+        <div className="modal-overlay" onClick={() => setSettingsOpen(false)}>
+          <div
+            className="modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="settings-title"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-header">
+              <h3 id="settings-title" style={{ margin: 0, fontSize: '14px' }}>Settings</h3>
+              <button
+                className="icon-btn close-btn"
+                aria-label="Close settings"
+                title="Close"
+                onClick={() => setSettingsOpen(false)}
+              >
+                ✕
+              </button>
+            </div>
+            <div className="modal-content">
+              <p>Settings content placeholder.</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

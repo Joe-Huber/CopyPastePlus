@@ -43,6 +43,80 @@ body {
   min-width: 300px; /* matches inline width in markup */
 }
 
+/* Layout containers */
+.popup-container {
+  width: 300px;
+}
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.controls-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+/* Icon button (settings, close) */
+.icon-btn {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, transform 60ms ease;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+
+.icon-btn:hover {
+  background: var(--hover);
+  border-color: var(--border-strong);
+}
+
+/* Modal styles */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  z-index: 1000;
+}
+
+.modal {
+  width: 100%;
+  max-width: 320px;
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-content {
+  padding: 12px;
+}
+
 h1 {
   margin: 0 0 8px;
   font-size: 16px;
@@ -121,7 +195,7 @@ li.copied {
 }
 
 /* Buttons - general (not icon buttons) */
-button:not(.star-btn):not(.trash-btn) {
+button:not(.star-btn):not(.trash-btn):not(.icon-btn) {
   appearance: none;
   border: 1px solid var(--border);
   background: var(--panel);
@@ -135,16 +209,16 @@ button:not(.star-btn):not(.trash-btn) {
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
 }
 
-button:not(.star-btn):not(.trash-btn):hover {
+button:not(.star-btn):not(.trash-btn):not(.icon-btn):hover {
   background: var(--hover);
   border-color: var(--border-strong);
 }
 
-button:not(.star-btn):not(.trash-btn):active {
+button:not(.star-btn):not(.trash-btn):not(.icon-btn):active {
   transform: translateY(1px);
 }
 
-button:not(.star-btn):not(.trash-btn):disabled {
+button:not(.star-btn):not(.trash-btn):not(.icon-btn):disabled {
   opacity: 0.55;
   cursor: not-allowed;
 }
