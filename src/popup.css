@@ -186,7 +186,8 @@ li:hover {
   cursor: pointer;
 }
 
-li.copied {
+li.copied,
+li.copied:hover {
   background-color: var(--success-tint);
   border-color: rgba(34, 197, 94, 0.35);
   transition: background-color 150ms ease-in-out, border-color 150ms ease-in-out;
