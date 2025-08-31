@@ -74,6 +74,48 @@ const Popup = () => {
     }
   }, [theme]);
 
+  // Capture keyboard copy/cut events inside the popup and push them to storage
+  useEffect(() => {
+    const getCopiedText = (e: ClipboardEvent): string | null => {
+      try {
+        const target = e.target as Element | null;
+        if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) {
+          const start = target.selectionStart ?? 0;
+          const end = target.selectionEnd ?? 0;
+          if (start !== end) {
+            const t = target.value.substring(start, end).trim();
+            if (t) return t;
+          }
+        }
+        const sel = window.getSelection()?.toString() ?? '';
+        if (sel.trim()) return sel.trim();
+        if (e.clipboardData) {
+          const dt = e.clipboardData.getData('text/plain');
+          if (dt && dt.trim()) return dt.trim();
+        }
+      } catch (_) {}
+      return null;
+    };
+
+    const handler = (e: ClipboardEvent) => {
+      const text = getCopiedText(e);
+      if (text) {
+        try {
+          if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id) {
+            chrome.runtime.sendMessage({ type: 'copiedText', text });
+          }
+        } catch (_) {}
+      }
+    };
+
+    document.addEventListener('copy', handler, true);
+    document.addEventListener('cut', handler, true);
+    return () => {
+      document.removeEventListener('copy', handler, true);
+      document.removeEventListener('cut', handler, true);
+    };
+  }, []);
+
 
   const handleFavoriteClick = (itemToFavorite: CopiedItem) => {
     const updatedItems = allItems.map(item =>
