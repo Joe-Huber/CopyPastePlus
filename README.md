@@ -41,6 +41,7 @@ Expand the functionality of copy/paste in Chrome. CopyPaste+ captures your copie
 
 Notes and limitations:
 - Chrome restricts extension behavior on certain pages (e.g., `chrome://` pages, the Chrome Web Store, some PDF viewers, new tab, and other special URLs). Copy capture and/or popup copy may not function there.
+- Copies can only be directly detected from a page or this extentsion, so copies from other extensions or from the url will not be detected.
 - Clipboard behavior varies by page and context. The popup uses multiple strategies to write to the clipboard; if one path fails in a given context, another is attempted.
 
 ## Development
