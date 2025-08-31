@@ -126,8 +126,8 @@ const Popup = () => {
       <h2>{title}</h2>
       <ul>
         {items.map((item) => (
-          <li key={item.id} className={copiedId === item.id ? 'copied' : ''}>
-              <span className={`item-text ${truncateItems ? 'truncate' : 'wrap'}`} onClick={() => handleItemClick(item)}>{item.text}</span>
+          <li key={item.id} className={copiedId === item.id ? 'copied' : ''} onClick={() => handleItemClick(item)}>
+              <span className={`item-text ${truncateItems ? 'truncate' : 'wrap'}`}>{item.text}</span>
               {copiedId === item.id && <span className="copied-badge">✓</span>}
               <div className="item-actions">
                 <button
