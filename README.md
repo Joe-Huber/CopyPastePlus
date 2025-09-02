@@ -101,7 +101,6 @@ Contributions are welcome!
 - Don’t commit build artifacts (`dist/`) or dependencies (`node_modules/`). The repo includes a `.gitignore` that ignores these
 
 Ideas and TODOs:
-- Options page (configurable limits, UI preferences)
 - Make UI look better
 - Search/filter in the popup
 - Keyboard shortcuts
