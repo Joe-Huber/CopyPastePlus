@@ -33,6 +33,39 @@
   }
 }
 
+/* Force theme overrides when selected in settings */
+:root[data-theme='dark'] {
+  --bg: #0b1020;
+  --panel: #0f172a;
+  --text: #e5e7eb;
+  --muted: #94a3b8;
+  --border: #24314a;
+  --border-strong: #314263;
+  --hover: #17213b;
+  --primary: #60a5fa;
+  --primary-hover: #93c5fd;
+  --success: #22c55e;
+  --success-tint: #0a2a17;
+  --danger: #ef4444;
+  --gold: #fbbf24;
+}
+
+:root[data-theme='light'] {
+  --bg: #f9fafb;
+  --panel: #ffffff;
+  --text: #0f172a;
+  --muted: #6b7280;
+  --border: #e6e8ef;
+  --border-strong: #d5d9e3;
+  --hover: #f3f4f6;
+  --primary: #2563eb;
+  --primary-hover: #1e40af;
+  --success: #16a34a;
+  --success-tint: #eaf7ee;
+  --danger: #dc2626;
+  --gold: #f59e0b;
+}
+
 body {
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
   font-size: 13px;
