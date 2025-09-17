@@ -18,11 +18,11 @@ const Popup = () => {
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
   const [truncateItems, setTruncateItems] = useState<boolean>(true);
   const [hideMostRecent, setHideMostRecent] = useState<boolean>(false);
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [themeMode, setThemeMode] = useState<'system' | 'dark' | 'light'>('system');
 
   useEffect(() => {
     const updateItems = () => {
-      chrome.storage.local.get({ copiedItems: [], truncateItems: true, hideMostRecent: false, theme: 'dark' }, (result) => {
+      chrome.storage.local.get({ copiedItems: [], truncateItems: true, hideMostRecent: false, themeMode: 'system', theme: null }, (result) => {
         let items = result.copiedItems;
         if (items.length > 0 && typeof items[0] === 'string') {
           items = items.map((text: any) => ({
@@ -37,7 +37,15 @@ const Popup = () => {
         setAllItems(items);
         setTruncateItems(result.truncateItems);
         setHideMostRecent(result.hideMostRecent);
-        setTheme(result.theme);
+        const legacyTheme = result.theme as ('dark' | 'light' | null);
+        const mode = result.themeMode as ('system' | 'dark' | 'light');
+        if (mode === 'system' || mode === 'dark' || mode === 'light') {
+          setThemeMode(mode);
+        } else if (legacyTheme === 'dark' || legacyTheme === 'light') {
+          setThemeMode(legacyTheme);
+        } else {
+          setThemeMode('system');
+        }
       });
     };
 
@@ -58,21 +66,13 @@ const Popup = () => {
   }, []);
 
   useEffect(() => {
-    const id = 'light-theme-css';
-    const href = './popup.light.css';
-    const existing = document.getElementById(id) as HTMLLinkElement | null;
-    if (theme === 'light') {
-      if (!existing) {
-        const link = document.createElement('link');
-        link.id = id;
-        link.rel = 'stylesheet';
-        link.href = href;
-        document.head.appendChild(link);
-      }
+    const root = document.documentElement;
+    if (themeMode === 'system') {
+      root.removeAttribute('data-theme');
     } else {
-      if (existing) existing.remove();
+      root.setAttribute('data-theme', themeMode);
     }
-  }, [theme]);
+  }, [themeMode]);
 
   // Capture keyboard copy/cut events inside the popup and push them to storage
   useEffect(() => {
@@ -234,19 +234,36 @@ const Popup = () => {
                 </button>
               </div>
               <div className="modal-content">
-                <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <input
-                    type="checkbox"
-                    checked={theme === 'light'}
-                    onChange={(e) => {
-                      const light = (e.target as HTMLInputElement).checked;
-                      const next = light ? 'light' : 'dark';
-                      setTheme(next);
-                      chrome.storage.local.set({ theme: next });
-                    }}
-                  />
-                  Use light mode
-                </label>
+                <div style={{ fontWeight: 600, marginBottom: 6 }}>Theme</div>
+                <div style={{ display: 'flex', gap: 12, marginBottom: 8 }} role="radiogroup" aria-label="Theme mode">
+                  <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                    <input
+                      type="radio"
+                      name="theme-mode"
+                      checked={themeMode === 'system'}
+                      onChange={() => { setThemeMode('system'); chrome.storage.local.set({ themeMode: 'system' }); }}
+                    />
+                    System
+                  </label>
+                  <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                    <input
+                      type="radio"
+                      name="theme-mode"
+                      checked={themeMode === 'light'}
+                      onChange={() => { setThemeMode('light'); chrome.storage.local.set({ themeMode: 'light' }); }}
+                    />
+                    Light
+                  </label>
+                  <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                    <input
+                      type="radio"
+                      name="theme-mode"
+                      checked={themeMode === 'dark'}
+                      onChange={() => { setThemeMode('dark'); chrome.storage.local.set({ themeMode: 'dark' }); }}
+                    />
+                    Dark
+                  </label>
+                </div>
 
                 <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 10 }}>
                   <input
@@ -332,19 +349,36 @@ const Popup = () => {
               </button>
             </div>
             <div className="modal-content">
-              <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <input
-                  type="checkbox"
-                  checked={theme === 'light'}
-                  onChange={(e) => {
-                    const light = (e.target as HTMLInputElement).checked;
-                    const next = light ? 'light' : 'dark';
-                    setTheme(next);
-                    chrome.storage.local.set({ theme: next });
-                  }}
-                />
-                Use light mode
-              </label>
+              <div style={{ fontWeight: 600, marginBottom: 6 }}>Theme</div>
+              <div style={{ display: 'flex', gap: 12, marginBottom: 8 }} role="radiogroup" aria-label="Theme mode">
+                <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  <input
+                    type="radio"
+                    name="theme-mode"
+                    checked={themeMode === 'system'}
+                    onChange={() => { setThemeMode('system'); chrome.storage.local.set({ themeMode: 'system' }); }}
+                  />
+                  System
+                </label>
+                <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  <input
+                    type="radio"
+                    name="theme-mode"
+                    checked={themeMode === 'light'}
+                    onChange={() => { setThemeMode('light'); chrome.storage.local.set({ themeMode: 'light' }); }}
+                  />
+                  Light
+                </label>
+                <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  <input
+                    type="radio"
+                    name="theme-mode"
+                    checked={themeMode === 'dark'}
+                    onChange={() => { setThemeMode('dark'); chrome.storage.local.set({ themeMode: 'dark' }); }}
+                  />
+                  Dark
+                </label>
+              </div>
 
               <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 10 }}>
                 <input
