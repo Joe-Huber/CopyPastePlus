@@ -18,11 +18,13 @@ const Popup = () => {
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
   const [truncateItems, setTruncateItems] = useState<boolean>(true);
   const [hideMostRecent, setHideMostRecent] = useState<boolean>(false);
+  const [hideFavorites, setHideFavorites] = useState<boolean>(false);
+  const [hideMostUsed, setHideMostUsed] = useState<boolean>(false);
   const [themeMode, setThemeMode] = useState<'system' | 'dark' | 'light'>('system');
 
   useEffect(() => {
     const updateItems = () => {
-      chrome.storage.local.get({ copiedItems: [], truncateItems: true, hideMostRecent: false, themeMode: 'system', theme: null }, (result) => {
+      chrome.storage.local.get({ copiedItems: [], truncateItems: true, hideFavorites: false, hideMostUsed: false, hideMostRecent: false, themeMode: 'system', theme: null }, (result) => {
         let items = result.copiedItems;
         if (items.length > 0 && typeof items[0] === 'string') {
           items = items.map((text: any) => ({
@@ -36,7 +38,9 @@ const Popup = () => {
         }
         setAllItems(items);
         setTruncateItems(result.truncateItems);
-        setHideMostRecent(result.hideMostRecent);
+        setHideFavorites(!!result.hideFavorites);
+        setHideMostUsed(!!result.hideMostUsed);
+        setHideMostRecent(!!result.hideMostRecent);
         const legacyTheme = result.theme as ('dark' | 'light' | null);
         const mode = result.themeMode as ('system' | 'dark' | 'light');
         if (mode === 'system' || mode === 'dark' || mode === 'light') {
@@ -281,18 +285,50 @@ const Popup = () => {
                   When enabled, long items are shortened with an ellipsis.
                 </p>
 
-                <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 10 }}>
-                  <input
-                    type="checkbox"
-                    checked={hideMostRecent}
-                    onChange={(e) => {
-                      const val = (e.target as HTMLInputElement).checked;
-                      setHideMostRecent(val);
-                      chrome.storage.local.set({ hideMostRecent: val });
-                    }}
-                  />
-                  Hide "Most Recent" on main page
-                </label>
+                <div style={{ marginTop: 10 }}>
+                  <div style={{ fontWeight: 600, marginBottom: 6 }}>Hide sections on main page</div>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+                    <input
+                      type="checkbox"
+                      checked={hideFavorites}
+                      onChange={(e) => {
+                        const val = (e.target as HTMLInputElement).checked;
+                        setHideFavorites(val);
+                        chrome.storage.local.set({ hideFavorites: val });
+                      }}
+                    />
+                    Favorites
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+                    <input
+                      type="checkbox"
+                      checked={hideMostUsed}
+                      onChange={(e) => {
+                        const val = (e.target as HTMLInputElement).checked;
+                        setHideMostUsed(val);
+                        chrome.storage.local.set({ hideMostUsed: val });
+                      }}
+                    />
+                    Most Used
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+                    <input
+                      type="checkbox"
+                      checked={hideMostRecent}
+                      onChange={(e) => {
+                        const val = (e.target as HTMLInputElement).checked;
+                        setHideMostRecent(val);
+                        chrome.storage.local.set({ hideMostRecent: val });
+                      }}
+                    />
+                    Most Recent
+                  </label>
+                  {hideFavorites && hideMostUsed && hideMostRecent && (
+                    <p style={{ marginTop: 6, color: 'var(--muted)' }}>
+                      All options are hidden; nothing will show on the main page.
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -324,8 +360,8 @@ const Popup = () => {
         <button onClick={() => setView('recent')}>View All Recent Copies</button>
       </div>
 
-      {renderList("Favorites", favorites)}
-      {renderList("Most Used", mostUsed)}
+      {!hideFavorites && renderList("Favorites", favorites)}
+      {!hideMostUsed && renderList("Most Used", mostUsed)}
       {!hideMostRecent && renderList("Most Recent", mostRecent)}
 
       {settingsOpen && (
@@ -396,18 +432,50 @@ const Popup = () => {
                 When enabled, long items are shortened with an ellipsis.
               </p>
 
-              <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 10 }}>
-                <input
-                  type="checkbox"
-                  checked={hideMostRecent}
-                  onChange={(e) => {
-                    const val = (e.target as HTMLInputElement).checked;
-                    setHideMostRecent(val);
-                    chrome.storage.local.set({ hideMostRecent: val });
-                  }}
-                />
-                Hide "Most Recent" on main page
-              </label>
+              <div style={{ marginTop: 10 }}>
+                <div style={{ fontWeight: 600, marginBottom: 6 }}>Hide sections on main page</div>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+                  <input
+                    type="checkbox"
+                    checked={hideFavorites}
+                    onChange={(e) => {
+                      const val = (e.target as HTMLInputElement).checked;
+                      setHideFavorites(val);
+                      chrome.storage.local.set({ hideFavorites: val });
+                    }}
+                  />
+                  Favorites
+                </label>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+                  <input
+                    type="checkbox"
+                    checked={hideMostUsed}
+                    onChange={(e) => {
+                      const val = (e.target as HTMLInputElement).checked;
+                      setHideMostUsed(val);
+                      chrome.storage.local.set({ hideMostUsed: val });
+                    }}
+                  />
+                  Most Used
+                </label>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+                  <input
+                    type="checkbox"
+                    checked={hideMostRecent}
+                    onChange={(e) => {
+                      const val = (e.target as HTMLInputElement).checked;
+                      setHideMostRecent(val);
+                      chrome.storage.local.set({ hideMostRecent: val });
+                    }}
+                  />
+                  Most Recent
+                </label>
+                {hideFavorites && hideMostUsed && hideMostRecent && (
+                  <p style={{ marginTop: 6, color: 'var(--muted)' }}>
+                    All options are hidden; nothing will show on the main page.
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         </div>
