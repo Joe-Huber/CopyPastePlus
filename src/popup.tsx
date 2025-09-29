@@ -323,6 +323,11 @@ const Popup = () => {
                     />
                     Most Recent
                   </label>
+                  {hideFavorites && hideMostUsed && hideMostRecent && (
+                    <p style={{ marginTop: 6, color: 'var(--muted)' }}>
+                      All options are hidden; nothing will show on the main page.
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -465,6 +470,11 @@ const Popup = () => {
                   />
                   Most Recent
                 </label>
+                {hideFavorites && hideMostUsed && hideMostRecent && (
+                  <p style={{ marginTop: 6, color: 'var(--muted)' }}>
+                    All options are hidden; nothing will show on the main page.
+                  </p>
+                )}
               </div>
             </div>
           </div>
