@@ -62,6 +62,105 @@ if (!EXT_AVAILABLE) {
       // Do NOT stop propagation; avoid breaking page behavior
     };
 
+    // Enable copy on sites that block it: CSS override, remove inline blockers, and capture-phase unblocking
+    (function enableCopyInit() {
+      try {
+        // 1) CSS override to force-enable selection across the page
+        const injectEnableSelectionCSS = () => {
+          const id = 'cpp-allow-copy-style';
+          if (document.getElementById(id)) return;
+          const style = document.createElement('style');
+          style.id = id;
+          style.textContent = `
+html, body, body * {
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  user-select: text !important;
+}
+[unselectable="on"], [unselectable="true"] {
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  user-select: text !important;
+}
+`;
+          (document.head || document.documentElement).appendChild(style);
+        };
+
+        // 2) Remove inline attributes that block copying and selection
+        const BLOCK_ATTRS = ['oncopy','oncut','onpaste','oncontextmenu','onselectstart','ondragstart'] as const;
+        const processElement = (el: Element) => {
+          for (const a of BLOCK_ATTRS) {
+            if (el.hasAttribute(a)) el.removeAttribute(a);
+            try { (el as any)[a] = null; } catch { /* noop */ }
+          }
+          const unselectable = el.getAttribute('unselectable');
+          if (unselectable === 'on' || unselectable === 'true') el.removeAttribute('unselectable');
+        };
+        const neuterInlineBlockers = (root?: ParentNode) => {
+          const scope: ParentNode = root || document;
+          if ((scope as any).querySelectorAll) {
+            (scope as Document | Element | DocumentFragment).querySelectorAll('*').forEach(processElement);
+          }
+          if (scope instanceof Document) {
+            if (scope.documentElement) processElement(scope.documentElement);
+          } else if (scope instanceof Element) {
+            processElement(scope);
+          }
+        };
+        const observeMutations = () => {
+          const mo = new MutationObserver((muts) => {
+            for (const m of muts) {
+              if (m.type === 'attributes') {
+                const name = m.attributeName;
+                if (!name) continue;
+                if (BLOCK_ATTRS.includes(name as any) || name === 'unselectable') {
+                  if (m.target instanceof Element) processElement(m.target);
+                }
+              } else if (m.type === 'childList') {
+                m.addedNodes.forEach((n) => {
+                  if (n.nodeType === Node.ELEMENT_NODE) neuterInlineBlockers(n as Element);
+                });
+              }
+            }
+          });
+          mo.observe(document, { subtree: true, childList: true, attributes: true });
+        };
+
+        // 3) Capture-phase unblocking for copy/cut sequences triggered by user (Ctrl/Cmd+C/X)
+        let lastCopyKeyTs = 0;
+        const onKeyDownCapture = (e: KeyboardEvent) => {
+          const key = (e.key || '').toLowerCase();
+          if ((e.ctrlKey || e.metaKey) && (key === 'c' || key === 'x')) {
+            lastCopyKeyTs = Date.now();
+          }
+        };
+        const onCopyCutCapture = (e: Event) => {
+          if (Date.now() - lastCopyKeyTs < 1500) {
+            // Mirror our own capture to persist the copied text even if we block page handlers
+            try { handleCopyLike(e as ClipboardEvent); } catch { /* noop */ }
+            if (typeof (e as any).stopImmediatePropagation === 'function') {
+              (e as any).stopImmediatePropagation();
+            } else {
+              e.stopPropagation();
+            }
+            // DO NOT call preventDefault; allow native copy/cut to proceed
+          }
+        };
+
+        // Execute the steps
+        injectEnableSelectionCSS();
+        neuterInlineBlockers();
+        observeMutations();
+        document.addEventListener('keydown', onKeyDownCapture, true);
+        document.addEventListener('copy', onCopyCutCapture, true);
+        document.addEventListener('cut', onCopyCutCapture, true);
+      } catch (err) {
+        console.warn('CopyPaste+ content: enableCopyInit failed', err);
+      }
+    })();
+
     // Capture phase listeners for reliability, without interfering with page code
     document.addEventListener('copy', handleCopyLike, true);
     document.addEventListener('cut', handleCopyLike, true);
