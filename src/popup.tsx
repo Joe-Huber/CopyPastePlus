@@ -9,11 +9,13 @@ interface CopiedItem {
   count: number;
 }
 
-type View = 'main' | 'recent';
+type View = 'main' | 'all';
+type Category = 'Favorites' | 'Most Used' | 'Most Recent';
 
 const Popup = () => {
   const [allItems, setAllItems] = useState<CopiedItem[]>([]);
   const [view, setView] = useState<View>('main');
+  const [category, setCategory] = useState<Category>('Most Recent');
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
   const [truncateItems, setTruncateItems] = useState<boolean>(true);
@@ -167,9 +169,12 @@ const Popup = () => {
     }
   };
 
-  const renderList = (title: string, items: CopiedItem[]) => (
+  const renderList = (title: string, items: CopiedItem[], showViewAll: boolean) => (
     <div>
-      <h2>{title}</h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h2>{title}</h2>
+        {showViewAll && <button onClick={() => { setView('all'); setCategory(title as Category); }}>View All</button>}
+      </div>
       <ul>
         {items.map((item) => (
           <li key={item.id} className={copiedId === item.id ? 'copied' : ''} onClick={() => handleItemClick(item)}>
@@ -197,7 +202,20 @@ const Popup = () => {
     </div>
   );
 
-  if (view === 'recent') {
+  const favorites = allItems.filter(item => item.favorite);
+  const mostUsed = [...allItems].sort((a, b) => b.count - a.count);
+  const mostRecent = [...allItems].sort((a, b) => b.timestamp - a.timestamp);
+
+  if (view === 'all') {
+    let items: CopiedItem[] = [];
+    if (category === 'Favorites') {
+      items = favorites;
+    } else if (category === 'Most Used') {
+      items = mostUsed;
+    } else {
+      items = mostRecent;
+    }
+
     return (
       <div className="popup-container">
         <div className="top-bar">
@@ -213,9 +231,9 @@ const Popup = () => {
         </div>
         <div className="controls-row">
           <button onClick={() => setView('main')}>Back</button>
-          <button onClick={clearNonFavorites} disabled={!hasNonFavorites}>Clear non-favorites</button>
+          {category === 'Favorites' && <button onClick={clearNonFavorites} disabled={!hasNonFavorites}>Clear non-favorites</button>}
         </div>
-        {renderList("Recent Items", allItems)}
+        {renderList(category, items, false)}
 
         {settingsOpen && (
           <div className="modal-overlay" onClick={() => setSettingsOpen(false)}>
@@ -337,10 +355,6 @@ const Popup = () => {
     );
   }
 
-  const favorites = allItems.filter(item => item.favorite);
-  const mostUsed = [...allItems].sort((a, b) => b.count - a.count).slice(0, 10);
-  const mostRecent = [...allItems].sort((a, b) => b.timestamp - a.timestamp).slice(0, 10);
-
   return (
     <div className="popup-container">
       <div className="top-bar">
@@ -357,12 +371,11 @@ const Popup = () => {
 
       <div className="controls-row">
         <button onClick={clearNonFavorites} disabled={!hasNonFavorites}>Clear non-favorites</button>
-        <button onClick={() => setView('recent')}>View All Recent Copies</button>
       </div>
 
-      {!hideFavorites && renderList("Favorites", favorites)}
-      {!hideMostUsed && renderList("Most Used", mostUsed)}
-      {!hideMostRecent && renderList("Most Recent", mostRecent)}
+      {!hideFavorites && renderList("Favorites", favorites.slice(0, 10), true)}
+      {!hideMostUsed && renderList("Most Used", mostUsed.slice(0, 10), true)}
+      {!hideMostRecent && renderList("Most Recent", mostRecent.slice(0, 10), true)}
 
       {settingsOpen && (
         <div className="modal-overlay" onClick={() => setSettingsOpen(false)}>
@@ -446,7 +459,7 @@ const Popup = () => {
                   />
                   Favorites
                 </label>
-                <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+                <label style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
                   <input
                     type="checkbox"
                     checked={hideMostUsed}
@@ -458,7 +471,7 @@ const Popup = () => {
                   />
                   Most Used
                 </label>
-                <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+                <label style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
                   <input
                     type="checkbox"
                     checked={hideMostRecent}
