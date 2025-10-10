@@ -175,7 +175,7 @@ const Popup = () => {
         <h2>{title}</h2>
         {showViewAll && <button onClick={() => { setView('all'); setCategory(title as Category); }}>View All</button>}
       </div>
-      <ul>
+      <ul style={{ marginTop: 8 }}>
         {items.map((item) => (
           <li key={item.id} className={copiedId === item.id ? 'copied' : ''} onClick={() => handleItemClick(item)}>
               <span className={`item-text ${truncateItems ? 'truncate' : 'wrap'}`}>{item.text}</span>
