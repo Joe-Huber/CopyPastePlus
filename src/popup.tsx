@@ -10,6 +10,36 @@ interface CopiedItem {
   copiedAt: number;
 }
 
+// Helper to generate a UUID with fallback for older environments.
+function generateId(): string {
+  try {
+    if (typeof (self as any).crypto !== 'undefined' && typeof (self as any).crypto.randomUUID === 'function') {
+      return (self as any).crypto.randomUUID();
+    }
+    const cryptoObj = (self as any).crypto || (globalThis as any).crypto;
+    if (cryptoObj && typeof cryptoObj.getRandomValues === 'function') {
+      const bytes = new Uint8Array(16);
+      cryptoObj.getRandomValues(bytes);
+      bytes[6] = (bytes[6] & 0x0f) | 0x40;
+      bytes[8] = (bytes[8] & 0x3f) | 0x80;
+      const hex: string[] = [];
+      for (let i = 0; i < bytes.length; i++) {
+        hex.push(bytes[i].toString(16).padStart(2, '0'));
+      }
+      return (
+        hex.slice(0, 4).join('') + '-' +
+        hex.slice(4, 6).join('') + '-' +
+        hex.slice(6, 8).join('') + '-' +
+        hex.slice(8, 10).join('') + '-' +
+        hex.slice(10, 16).join('')
+      );
+    }
+  } catch (e) {
+    // fallthrough
+  }
+  return `id-${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
+}
+
 type View = 'main' | 'all';
 type Category = 'Favorites' | 'Most Used' | 'Most Recent';
 
@@ -46,7 +76,7 @@ const Popup = () => {
           if (typeof item === 'string') {
             needsUpdate = true;
             return {
-              id: self.crypto.randomUUID(),
+              id: generateId(),
               text: item,
               timestamp: now,
               favorite: false,
@@ -59,7 +89,7 @@ const Popup = () => {
               needsUpdate = true;
             }
             return {
-              id: item.id ?? self.crypto.randomUUID(),
+              id: item.id ?? generateId(),
               text: item.text,
               timestamp: item.timestamp ?? now,
               favorite: item.favorite ?? false,
