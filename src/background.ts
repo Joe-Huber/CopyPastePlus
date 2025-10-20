@@ -186,14 +186,22 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log("Background script received a message:", request);
 
   if (request.type === 'copiedText') {
-    updateStorageWithText(request.text);
+    try {
+      updateStorageWithText(request.text);
+    } catch (err) {
+      console.error('CopyPaste+ background: error processing copied text', err);
+    }
   }
 
   if (request.type === 'popupCopy') {
     const text = request.text as string;
     writeClipboard(text)
       .then(() => {
-        updateStorageWithText(text);
+        try {
+          updateStorageWithText(text);
+        } catch (err) {
+          console.error('CopyPaste+ background: error processing popup copy', err);
+        }
         sendResponse({ ok: true });
       })
       .catch((err) => {
