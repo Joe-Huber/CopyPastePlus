@@ -59,12 +59,12 @@ const Popup = () => {
               needsUpdate = true;
             }
             return {
-              id: item.id || self.crypto.randomUUID(),
+              id: item.id ?? self.crypto.randomUUID(),
               text: item.text,
-              timestamp: item.timestamp || now,
-              favorite: item.favorite || false,
-              count: item.count || 1,
-              copiedAt: item.copiedAt || item.timestamp || now,
+              timestamp: item.timestamp ?? now,
+              favorite: item.favorite ?? false,
+              count: item.count ?? 1,
+              copiedAt: item.copiedAt ?? item.timestamp ?? now,
             };
           }
           return null;
@@ -247,8 +247,8 @@ const Popup = () => {
   );
 
   const favorites = allItems.filter(item => item.favorite);
-  const mostUsed = [...allItems].sort((a, b) => b.count - a.count);
-  const mostRecent = [...allItems].sort((a, b) => b.timestamp - a.timestamp);
+  const mostUsed = [...allItems].sort((a, b) => (b.count ?? 0) - (a.count ?? 0));
+  const mostRecent = [...allItems].sort((a, b) => (b.timestamp ?? 0) - (a.timestamp ?? 0));
 
   if (view === 'all') {
     let items: CopiedItem[] = [];
