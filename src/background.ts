@@ -14,7 +14,13 @@ function updateStorageWithText(newText: string) {
         console.error('CopyPaste+ background: error getting storage', chrome.runtime.lastError);
         return;
       }
-      let items: any[] = result.copiedItems || [];
+      
+      let items: any[] = result.copiedItems;
+      if (!Array.isArray(items)) {
+        console.warn('CopyPaste+ background: stored items was not an array, resetting.');
+        items = [];
+      }
+
       const now = Date.now();
 
       // Normalize items to the latest CopiedItem structure
