@@ -9,60 +9,72 @@ interface CopiedItem {
 
 function updateStorageWithText(newText: string) {
   chrome.storage.local.get({ copiedItems: [] }, (result) => {
-    let items: any[] = result.copiedItems || [];
-    const now = Date.now();
+    try {
+      if (chrome.runtime.lastError) {
+        console.error('CopyPaste+ background: error getting storage', chrome.runtime.lastError);
+        return;
+      }
+      let items: any[] = result.copiedItems || [];
+      const now = Date.now();
 
-    // Normalize items to the latest CopiedItem structure
-    const normalizedItems: CopiedItem[] = items.map(item => {
-      if (typeof item === 'string') {
-        return {
+      // Normalize items to the latest CopiedItem structure
+      const normalizedItems: CopiedItem[] = items.map(item => {
+        if (typeof item === 'string') {
+          return {
+            id: self.crypto.randomUUID(),
+            text: item,
+            timestamp: now,
+            favorite: false,
+            count: 1,
+            copiedAt: now,
+          };
+        }
+        if (typeof item === 'object' && item !== null && item.text) {
+          return {
+            id: item.id || self.crypto.randomUUID(),
+            text: item.text,
+            timestamp: item.timestamp || now,
+            favorite: item.favorite || false,
+            count: item.count || 1,
+            copiedAt: item.copiedAt || item.timestamp || now,
+          };
+        }
+        return null; // Invalid item format
+      }).filter((item): item is CopiedItem => item !== null);
+
+      const existingItemIndex = normalizedItems.findIndex(item => item.text === newText);
+
+      if (existingItemIndex !== -1) {
+        const item = normalizedItems[existingItemIndex];
+        item.timestamp = now;
+        item.count = (item.count || 1) + 1;
+        item.copiedAt = now;
+      } else {
+        const newItem: CopiedItem = {
           id: self.crypto.randomUUID(),
-          text: item,
+          text: newText,
           timestamp: now,
           favorite: false,
           count: 1,
           copiedAt: now,
         };
+        normalizedItems.push(newItem);
       }
-      if (typeof item === 'object' && item !== null && item.text) {
-        return {
-          id: item.id || self.crypto.randomUUID(),
-          text: item.text,
-          timestamp: item.timestamp || now,
-          favorite: item.favorite || false,
-          count: item.count || 1,
-          copiedAt: item.copiedAt || item.timestamp || now,
-        };
-      }
-      return null; // Invalid item format
-    }).filter((item): item is CopiedItem => item !== null);
 
-    const existingItemIndex = normalizedItems.findIndex(item => item.text === newText);
+      normalizedItems.sort((a, b) => b.timestamp - a.timestamp);
 
-    if (existingItemIndex !== -1) {
-      const item = normalizedItems[existingItemIndex];
-      item.timestamp = now;
-      item.count = (item.count || 1) + 1;
-      item.copiedAt = now;
-    } else {
-      const newItem: CopiedItem = {
-        id: self.crypto.randomUUID(),
-        text: newText,
-        timestamp: now,
-        favorite: false,
-        count: 1,
-        copiedAt: now,
-      };
-      normalizedItems.push(newItem);
+      const finalItems = normalizedItems.slice(0, 100);
+
+      chrome.storage.local.set({ copiedItems: finalItems }, () => {
+        if (chrome.runtime.lastError) {
+          console.error('CopyPaste+ background: error setting storage', chrome.runtime.lastError);
+        } else {
+          console.log("Updated items saved to storage:", finalItems.length);
+        }
+      });
+    } catch (err) {
+      console.error('CopyPaste+ background: unhandled error in updateStorageWithText', err);
     }
-
-    normalizedItems.sort((a, b) => b.timestamp - a.timestamp);
-
-    const finalItems = normalizedItems.slice(0, 100);
-
-    chrome.storage.local.set({ copiedItems: finalItems }, () => {
-      console.log("Updated items saved to storage:", finalItems);
-    });
   });
 }
 
@@ -183,11 +195,11 @@ async function writeClipboard(text: string): Promise<void> {
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  console.log("Background script received a message:", request);
-
   if (request.type === 'copiedText') {
     try {
-      updateStorageWithText(request.text);
+      if (typeof request.text === 'string' && request.text.trim()) {
+        updateStorageWithText(request.text);
+      }
     } catch (err) {
       console.error('CopyPaste+ background: error processing copied text', err);
     }
