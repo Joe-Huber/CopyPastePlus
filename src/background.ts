@@ -7,6 +7,39 @@ interface CopiedItem {
   copiedAt: number;
 }
 
+// Helper to generate a UUID with fallback for older environments.
+function generateId(): string {
+  try {
+    // Prefer built-in randomUUID if available
+    if (typeof (self as any).crypto !== 'undefined' && typeof (self as any).crypto.randomUUID === 'function') {
+      return (self as any).crypto.randomUUID();
+    }
+    const cryptoObj = (self as any).crypto || (globalThis as any).crypto;
+    if (cryptoObj && typeof cryptoObj.getRandomValues === 'function') {
+      const bytes = new Uint8Array(16);
+      cryptoObj.getRandomValues(bytes);
+      // Per RFC4122 v4
+      bytes[6] = (bytes[6] & 0x0f) | 0x40;
+      bytes[8] = (bytes[8] & 0x3f) | 0x80;
+      const hex: string[] = [];
+      for (let i = 0; i < bytes.length; i++) {
+        hex.push(bytes[i].toString(16).padStart(2, '0'));
+      }
+      return (
+        hex.slice(0, 4).join('') + '-' +
+        hex.slice(4, 6).join('') + '-' +
+        hex.slice(6, 8).join('') + '-' +
+        hex.slice(8, 10).join('') + '-' +
+        hex.slice(10, 16).join('')
+      );
+    }
+  } catch (e) {
+    // fallthrough to timestamp fallback
+  }
+  // Last-resort fallback
+  return `id-${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
+}
+
 function updateStorageWithText(newText: string) {
   chrome.storage.local.get({ copiedItems: [] }, (result) => {
     try {
@@ -27,7 +60,7 @@ function updateStorageWithText(newText: string) {
       const normalizedItems: CopiedItem[] = items.map(item => {
         if (typeof item === 'string') {
           return {
-            id: self.crypto.randomUUID(),
+            id: generateId(),
             text: item,
             timestamp: now,
             favorite: false,
@@ -37,7 +70,7 @@ function updateStorageWithText(newText: string) {
         }
         if (typeof item === 'object' && item !== null && item.text) {
           return {
-            id: item.id ?? self.crypto.randomUUID(),
+            id: item.id ?? generateId(),
             text: item.text,
             timestamp: item.timestamp ?? now,
             favorite: item.favorite ?? false,
@@ -57,7 +90,7 @@ function updateStorageWithText(newText: string) {
         item.copiedAt = now;
       } else {
         const newItem: CopiedItem = {
-          id: self.crypto.randomUUID(),
+          id: generateId(),
           text: newText,
           timestamp: now,
           favorite: false,
@@ -112,7 +145,7 @@ function writeClipboardViaOffscreen(text: string): Promise<void> {
   return new Promise(async (resolve, reject) => {
     try {
       await ensureOffscreenDocument();
-      const requestId = self.crypto.randomUUID();
+      const requestId = generateId();
 
       const listener = (msg: any) => {
         if (msg && msg.type === 'write-clipboard-result' && msg.requestId === requestId) {
