@@ -7,6 +7,7 @@ interface CopiedItem {
   timestamp: number;
   favorite: boolean;
   count: number;
+  copiedAt: number;
 }
 
 type View = 'main' | 'all';
@@ -29,12 +30,14 @@ const Popup = () => {
       chrome.storage.local.get({ copiedItems: [], truncateItems: true, hideFavorites: false, hideMostUsed: false, hideMostRecent: false, themeMode: 'system', theme: null }, (result) => {
         let items = result.copiedItems;
         if (items.length > 0 && typeof items[0] === 'string') {
+          const now = Date.now();
           items = items.map((text: any) => ({
             id: self.crypto.randomUUID(),
             text: text as string,
-            timestamp: Date.now(),
+            timestamp: now,
             favorite: false,
             count: 1,
+            copiedAt: now,
           }));
           chrome.storage.local.set({ copiedItems: items });
         }
