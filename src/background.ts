@@ -9,30 +9,42 @@ interface CopiedItem {
 
 function updateStorageWithText(newText: string) {
   chrome.storage.local.get({ copiedItems: [] }, (result) => {
-    console.log("Current items from storage:", result.copiedItems);
-    let items: any = result.copiedItems;
+    let items: any[] = result.copiedItems || [];
+    const now = Date.now();
 
-    if (items.length > 0 && typeof items[0] === 'string') {
-      const now = Date.now();
-      items = items.map((text: any) => ({
-        id: self.crypto.randomUUID(),
-        text: text as string,
-        timestamp: now,
-        favorite: false,
-        count: 1,
-        copiedAt: now,
-      }));
-    }
+    // Normalize items to the latest CopiedItem structure
+    const normalizedItems: CopiedItem[] = items.map(item => {
+      if (typeof item === 'string') {
+        return {
+          id: self.crypto.randomUUID(),
+          text: item,
+          timestamp: now,
+          favorite: false,
+          count: 1,
+          copiedAt: now,
+        };
+      }
+      if (typeof item === 'object' && item !== null && item.text) {
+        return {
+          id: item.id || self.crypto.randomUUID(),
+          text: item.text,
+          timestamp: item.timestamp || now,
+          favorite: item.favorite || false,
+          count: item.count || 1,
+          copiedAt: item.copiedAt || item.timestamp || now,
+        };
+      }
+      return null; // Invalid item format
+    }).filter((item): item is CopiedItem => item !== null);
 
-    const existingItemIndex = items.findIndex((item: CopiedItem) => item.text === newText);
+    const existingItemIndex = normalizedItems.findIndex(item => item.text === newText);
 
     if (existingItemIndex !== -1) {
-      const now = Date.now();
-      items[existingItemIndex].timestamp = now;
-      items[existingItemIndex].count++;
-      items[existingItemIndex].copiedAt = now;
+      const item = normalizedItems[existingItemIndex];
+      item.timestamp = now;
+      item.count = (item.count || 1) + 1;
+      item.copiedAt = now;
     } else {
-      const now = Date.now();
       const newItem: CopiedItem = {
         id: self.crypto.randomUUID(),
         text: newText,
@@ -41,17 +53,15 @@ function updateStorageWithText(newText: string) {
         count: 1,
         copiedAt: now,
       };
-      items.push(newItem);
+      normalizedItems.push(newItem);
     }
 
-    items.sort((a: CopiedItem, b: CopiedItem) => b.timestamp - a.timestamp);
+    normalizedItems.sort((a, b) => b.timestamp - a.timestamp);
 
-    if (items.length > 100) {
-      items = items.slice(0, 100);
-    }
+    const finalItems = normalizedItems.slice(0, 100);
 
-    chrome.storage.local.set({ copiedItems: items }, () => {
-      console.log("Updated items saved to storage:", items);
+    chrome.storage.local.set({ copiedItems: finalItems }, () => {
+      console.log("Updated items saved to storage:", finalItems);
     });
   });
 }
