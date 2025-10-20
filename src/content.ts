@@ -43,9 +43,18 @@ if (!EXT_AVAILABLE) {
 
     const sendCopied = (text: string) => {
       try {
-        chrome.runtime.sendMessage({ type: 'copiedText', text });
+        // Guard again at call-site in case availability changed or bundler altered flow
+        const safeChrome: any = (typeof chrome !== 'undefined') ? chrome : null;
+        const canSend = !!(safeChrome && safeChrome.runtime && typeof safeChrome.runtime.sendMessage === 'function' && safeChrome.runtime.id);
+        if (!canSend) {
+          // Avoid noisy errors in unsupported frames; debug log only
+          console.debug('CopyPaste+ content: runtime unavailable at send time; skipping message');
+          return;
+        }
+        safeChrome.runtime.sendMessage({ type: 'copiedText', text });
       } catch (err) {
-        console.error('CopyPaste+ content: failed to send message to background', err);
+        // Some frames can throw security errors; keep this at debug to reduce noise
+        console.debug('CopyPaste+ content: failed to send message to background', err);
       }
     };
 
