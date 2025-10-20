@@ -37,12 +37,12 @@ function updateStorageWithText(newText: string) {
         }
         if (typeof item === 'object' && item !== null && item.text) {
           return {
-            id: item.id || self.crypto.randomUUID(),
+            id: item.id ?? self.crypto.randomUUID(),
             text: item.text,
-            timestamp: item.timestamp || now,
-            favorite: item.favorite || false,
-            count: item.count || 1,
-            copiedAt: item.copiedAt || item.timestamp || now,
+            timestamp: item.timestamp ?? now,
+            favorite: item.favorite ?? false,
+            count: item.count ?? 1,
+            copiedAt: item.copiedAt ?? item.timestamp ?? now,
           };
         }
         return null; // Invalid item format
@@ -53,7 +53,7 @@ function updateStorageWithText(newText: string) {
       if (existingItemIndex !== -1) {
         const item = normalizedItems[existingItemIndex];
         item.timestamp = now;
-        item.count = (item.count || 1) + 1;
+        item.count = (item.count ?? 1) + 1;
         item.copiedAt = now;
       } else {
         const newItem: CopiedItem = {
@@ -67,7 +67,7 @@ function updateStorageWithText(newText: string) {
         normalizedItems.push(newItem);
       }
 
-      normalizedItems.sort((a, b) => b.timestamp - a.timestamp);
+      normalizedItems.sort((a, b) => (b.timestamp ?? 0) - (a.timestamp ?? 0));
 
       const finalItems = normalizedItems.slice(0, 100);
 
