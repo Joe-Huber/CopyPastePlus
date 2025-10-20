@@ -180,7 +180,11 @@ const Popup = () => {
       </div>
       <ul style={{ marginTop: 8 }}>
         {items.map((item) => (
-          <li key={item.id} className={copiedId === item.id ? 'copied' : ''} onClick={() => handleItemClick(item)}>
+          <li
+            key={item.id}
+            className={copiedId === item.id ? 'copied' : ''}
+            onClick={() => handleItemClick(item)}
+            title={item.copiedAt ? `Copied: ${new Date(item.copiedAt).toLocaleString()}` : `Added: ${new Date(item.timestamp).toLocaleString()}`}>
               <span className={`item-text ${truncateItems ? 'truncate' : 'wrap'}`}>{item.text}</span>
               {copiedId === item.id && <span className="copied-badge">✓</span>}
               <div className="item-actions">
