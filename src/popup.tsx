@@ -28,7 +28,17 @@ const Popup = () => {
   useEffect(() => {
     const updateItems = () => {
       chrome.storage.local.get({ copiedItems: [], truncateItems: true, hideFavorites: false, hideMostUsed: false, hideMostRecent: false, themeMode: 'system', theme: null }, (result) => {
-        const items: any[] = result.copiedItems || [];
+        if (chrome.runtime.lastError) {
+          console.error('CopyPaste+ popup: error getting storage', chrome.runtime.lastError);
+          return;
+        }
+
+        let items: any[] = result.copiedItems;
+        if (!Array.isArray(items)) {
+          console.warn('CopyPaste+ popup: stored items was not an array, resetting.');
+          items = [];
+        }
+        
         const now = Date.now();
         let needsUpdate = false;
 
@@ -61,7 +71,11 @@ const Popup = () => {
         }).filter((item): item is CopiedItem => item !== null);
 
         if (needsUpdate) {
-          chrome.storage.local.set({ copiedItems: normalizedItems });
+          chrome.storage.local.set({ copiedItems: normalizedItems }, () => {
+            if (chrome.runtime.lastError) {
+              console.error('CopyPaste+ popup: error setting storage', chrome.runtime.lastError);
+            }
+          });
         }
         
         setAllItems(normalizedItems);
