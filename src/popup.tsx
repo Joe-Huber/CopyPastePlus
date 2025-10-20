@@ -28,20 +28,43 @@ const Popup = () => {
   useEffect(() => {
     const updateItems = () => {
       chrome.storage.local.get({ copiedItems: [], truncateItems: true, hideFavorites: false, hideMostUsed: false, hideMostRecent: false, themeMode: 'system', theme: null }, (result) => {
-        let items = result.copiedItems;
-        if (items.length > 0 && typeof items[0] === 'string') {
-          const now = Date.now();
-          items = items.map((text: any) => ({
-            id: self.crypto.randomUUID(),
-            text: text as string,
-            timestamp: now,
-            favorite: false,
-            count: 1,
-            copiedAt: now,
-          }));
-          chrome.storage.local.set({ copiedItems: items });
+        const items: any[] = result.copiedItems || [];
+        const now = Date.now();
+        let needsUpdate = false;
+
+        const normalizedItems: CopiedItem[] = items.map(item => {
+          if (typeof item === 'string') {
+            needsUpdate = true;
+            return {
+              id: self.crypto.randomUUID(),
+              text: item,
+              timestamp: now,
+              favorite: false,
+              count: 1,
+              copiedAt: now,
+            };
+          }
+          if (typeof item === 'object' && item !== null && item.text) {
+            if (!item.id || !item.copiedAt) {
+              needsUpdate = true;
+            }
+            return {
+              id: item.id || self.crypto.randomUUID(),
+              text: item.text,
+              timestamp: item.timestamp || now,
+              favorite: item.favorite || false,
+              count: item.count || 1,
+              copiedAt: item.copiedAt || item.timestamp || now,
+            };
+          }
+          return null;
+        }).filter((item): item is CopiedItem => item !== null);
+
+        if (needsUpdate) {
+          chrome.storage.local.set({ copiedItems: normalizedItems });
         }
-        setAllItems(items);
+        
+        setAllItems(normalizedItems);
         setTruncateItems(result.truncateItems);
         setHideFavorites(!!result.hideFavorites);
         setHideMostUsed(!!result.hideMostUsed);
