@@ -1,4 +1,5 @@
-# CopyPaste+
+<h1 align="center">CopyPaste+</h1>
+
 
 <img src="icons/banner.png" alt="CopyPaste+ banner" />
 
