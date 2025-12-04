@@ -1,6 +1,15 @@
-# CopyPaste+
+<h1 align="center">CopyPaste+</h1>
+
 
 <img src="icons/banner.png" alt="CopyPaste+ banner" />
+
+[![Top Language](https://img.shields.io/github/languages/top/Joe-Huber/CopyPastePlus)](https://github.com/Joe-Huber/CopyPastePlus)
+[![Code Size](https://img.shields.io/github/languages/code-size/Joe-Huber/CopyPastePlus)](https://github.com/Joe-Huber/CopyPastePlus)
+[![Last Commit](https://img.shields.io/github/last-commit/Joe-Huber/CopyPastePlus)](https://github.com/Joe-Huber/CopyPastePlus/commits/main)
+[![Issues](https://img.shields.io/github/issues/Joe-Huber/CopyPastePlus)](https://github.com/Joe-Huber/CopyPastePlus/issues)
+[![Forks](https://img.shields.io/github/forks/Joe-Huber/CopyPastePlus)](https://github.com/Joe-Huber/CopyPastePlus/network/members)
+[![Stars](https://img.shields.io/github/stars/Joe-Huber/CopyPastePlus)](https://github.com/Joe-Huber/CopyPastePlus/stargazers)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Expand the functionality of copy/paste in Chrome. CopyPaste+ captures your copied text and gives you a history with favorites and usage counts, available right from the toolbar popup.
 
@@ -16,6 +25,11 @@ Expand the functionality of copy/paste in Chrome. CopyPaste+ captures your copie
 - Star toggle (☆/★) to mark favorites
 - Clear non-favorites action to prune your history quickly
 - Persistent storage using chrome.storage.local
+- Settings page with following options:
+  - Theme
+    - System Default - Light - Dark
+  - Truncate long items in the popup
+  - Hiding certain selection sections (eg: Most Used, Most Recent, favorites)
 
 
 ## Installation (from source)
@@ -30,6 +44,8 @@ Expand the functionality of copy/paste in Chrome. CopyPaste+ captures your copie
    - Enable "Developer mode"
    - Click "Load unpacked" and select the repository root directory
 
+An option for installing from the Chrome Web Store may be added in the future; dependent on demand and project
+popularity.
 
 ## Usage
 
@@ -37,12 +53,13 @@ Expand the functionality of copy/paste in Chrome. CopyPaste+ captures your copie
 - Click the CopyPaste+ toolbar icon to open the popup
 - Click an item to copy it to your clipboard
 - Click the star on an item to favorite/unfavorite it
-- Use "Clear non-favorites" to keep only starred items
+
 
 Notes and limitations:
 - Chrome restricts extension behavior on certain pages (e.g., `chrome://` pages, the Chrome Web Store, some PDF viewers, new tab, and other special URLs). Copy capture and/or popup copy may not function there.
 - Copies can only be directly detected from a page or this extentsion, so copies from other extensions or from the url will not be detected.
-- Clipboard behavior varies by page and context. The popup uses multiple strategies to write to the clipboard; if one path fails in a given context, another is attempted.
+- Copies are only detected when the content script is active on a page. This means that if you install the extension and copy something on a page that was already open, it may not be captured until you refresh that page.
+- Clipboard access is on the browser only, so copying from system apps (outside Chrome) will not be captured.
 
 ## Development
 
@@ -84,11 +101,6 @@ Privacy: CopyPaste+ does not send your data anywhere. All history is stored loca
   - Ensure you’re testing on a normal HTTP/HTTPS page (not `chrome://*` or the Web Store)
   - Open the page console and look for content script logs
   - Reload the extension in `chrome://extensions` and refresh the page
-- Clicking an item doesn’t copy
-  - Some page contexts can block clipboard access. The popup tries direct write first, then falls back to injecting a copy routine into the active tab. Make sure a normal tab is active and focused
-  - Check background logs in the Service Worker console for errors
-- Moji-bake stars (e.g., `â˜†`)
-  - Ensure `<meta charset="utf-8">` is present in `popup.html` (it is in this repo)
 - Error in Chrome developer settings and nothing gets added from the clipbaord anymore
   - Reload the extentsion and make sure you are on a refreshed tab. If your tab is from before the extentsion's most recent change you made, the incorrect script will be injected and it won't work.
 
@@ -101,10 +113,7 @@ Contributions are welcome!
 - Don’t commit build artifacts (`dist/`) or dependencies (`node_modules/`). The repo includes a `.gitignore` that ignores these
 
 Ideas and TODOs:
-- Make UI look better
-- Search/filter in the popup
-- Keyboard shortcuts
-- Enable copying on pages that don't allow it
+ - Check the project's [Issues page](https://github.com/Joe-Huber/CopyPastePlus/issues) for known problems, improvements, or feature ideas.
 
 
 ## License
