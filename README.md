@@ -57,7 +57,8 @@ popularity.
 Notes and limitations:
 - Chrome restricts extension behavior on certain pages (e.g., `chrome://` pages, the Chrome Web Store, some PDF viewers, new tab, and other special URLs). Copy capture and/or popup copy may not function there.
 - Copies can only be directly detected from a page or this extentsion, so copies from other extensions or from the url will not be detected.
-- Clipboard behavior varies by page and context. The popup uses multiple strategies to write to the clipboard; if one path fails in a given context, another is attempted.
+- Copies are only detected when the content script is active on a page. This means that if you install the extension and copy something on a page that was already open, it may not be captured until you refresh that page.
+- Clipboard access is on the browser only, so copying from system apps (outside Chrome) will not be captured.
 
 ## Development
 
