@@ -100,11 +100,6 @@ Privacy: CopyPaste+ does not send your data anywhere. All history is stored loca
   - Ensure you’re testing on a normal HTTP/HTTPS page (not `chrome://*` or the Web Store)
   - Open the page console and look for content script logs
   - Reload the extension in `chrome://extensions` and refresh the page
-- Clicking an item doesn’t copy
-  - Some page contexts can block clipboard access. The popup tries direct write first, then falls back to injecting a copy routine into the active tab. Make sure a normal tab is active and focused
-  - Check background logs in the Service Worker console for errors
-- Moji-bake stars (e.g., `â˜†`)
-  - Ensure `<meta charset="utf-8">` is present in `popup.html` (it is in this repo)
 - Error in Chrome developer settings and nothing gets added from the clipbaord anymore
   - Reload the extentsion and make sure you are on a refreshed tab. If your tab is from before the extentsion's most recent change you made, the incorrect script will be injected and it won't work.
 
