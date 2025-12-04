@@ -112,10 +112,7 @@ Contributions are welcome!
 - Don’t commit build artifacts (`dist/`) or dependencies (`node_modules/`). The repo includes a `.gitignore` that ignores these
 
 Ideas and TODOs:
-- Make UI look better
-- Search/filter in the popup
-- Keyboard shortcuts
-- Enable copying on pages that don't allow it
+ - Check the project's [Issues page](https://github.com/Joe-Huber/CopyPastePlus/issues) for known problems, improvements, or feature ideas.
 
 
 ## License
