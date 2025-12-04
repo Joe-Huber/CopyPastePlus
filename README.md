@@ -52,7 +52,7 @@ popularity.
 - Click the CopyPaste+ toolbar icon to open the popup
 - Click an item to copy it to your clipboard
 - Click the star on an item to favorite/unfavorite it
-- Use "Clear non-favorites" to keep only starred items
+
 
 Notes and limitations:
 - Chrome restricts extension behavior on certain pages (e.g., `chrome://` pages, the Chrome Web Store, some PDF viewers, new tab, and other special URLs). Copy capture and/or popup copy may not function there.
