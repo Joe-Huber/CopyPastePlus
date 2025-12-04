@@ -2,6 +2,14 @@
 
 <img src="icons/banner.png" alt="CopyPaste+ banner" />
 
+[![Top Language](https://img.shields.io/github/languages/top/Joe-Huber/CopyPastePlus)](https://github.com/Joe-Huber/CopyPastePlus)
+[![Code Size](https://img.shields.io/github/languages/code-size/Joe-Huber/CopyPastePlus)](https://github.com/Joe-Huber/CopyPastePlus)
+[![Last Commit](https://img.shields.io/github/last-commit/Joe-Huber/CopyPastePlus)](https://github.com/Joe-Huber/CopyPastePlus/commits/main)
+[![Issues](https://img.shields.io/github/issues/Joe-Huber/CopyPastePlus)](https://github.com/Joe-Huber/CopyPastePlus/issues)
+[![Forks](https://img.shields.io/github/forks/Joe-Huber/CopyPastePlus)](https://github.com/Joe-Huber/CopyPastePlus/network/members)
+[![Stars](https://img.shields.io/github/stars/Joe-Huber/CopyPastePlus)](https://github.com/Joe-Huber/CopyPastePlus/stargazers)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 Expand the functionality of copy/paste in Chrome. CopyPaste+ captures your copied text and gives you a history with favorites and usage counts, available right from the toolbar popup.
 
 
