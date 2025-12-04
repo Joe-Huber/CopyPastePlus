@@ -43,6 +43,8 @@ Expand the functionality of copy/paste in Chrome. CopyPaste+ captures your copie
    - Enable "Developer mode"
    - Click "Load unpacked" and select the repository root directory
 
+An option for installing from the Chrome Web Store may be added in the future; dependent on demand and project
+popularity.
 
 ## Usage
 
