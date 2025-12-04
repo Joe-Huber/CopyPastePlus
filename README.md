@@ -24,6 +24,11 @@ Expand the functionality of copy/paste in Chrome. CopyPaste+ captures your copie
 - Star toggle (☆/★) to mark favorites
 - Clear non-favorites action to prune your history quickly
 - Persistent storage using chrome.storage.local
+- Settings page with following options:
+  - Theme
+    - System Default - Light - Dark
+  - Truncate long items in the popup
+  - Hiding certain selection sections (eg: Most Used, Most Recent, favorites)
 
 
 ## Installation (from source)
