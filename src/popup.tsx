@@ -61,7 +61,7 @@ const Popup = () => {
     return () => {
       chrome.storage.onChanged.removeListener(updateItems);
     };
-  }, [hideFavorites, hideMostUsed, hideMostRecent]);
+  }, []);
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -364,7 +364,7 @@ const Popup = () => {
                 >
                   Remove ALL items
                 </button>
-                <p style={{ marginTop: 6, color: 'var(--muted)' }}>
+                <p style={{ marginTop: 6, color: 'var(--danger)' }}>
                   This will permanently delete all copied items, including your favorites.
                 </p>
               </div>
@@ -479,7 +479,7 @@ const Popup = () => {
                   />
                   Favorites
                 </label>
-                <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+                <label style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
                   <input
                     type="checkbox"
                     checked={hideMostUsed}
@@ -491,7 +491,7 @@ const Popup = () => {
                   />
                   Most Used
                 </label>
-                <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+                <label style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
                   <input
                     type="checkbox"
                     checked={hideMostRecent}
@@ -519,7 +519,7 @@ const Popup = () => {
               >
                 Remove ALL items
               </button>
-              <p style={{ marginTop: 6, color: 'var(--muted)' }}>
+              <p style={{ marginTop: 6, color: 'var(--danger)' }}>
                 This will permanently delete all copied items, including your favorites.
               </p>
             </div>
