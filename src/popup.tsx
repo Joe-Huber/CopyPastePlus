@@ -143,6 +143,13 @@ const Popup = () => {
     chrome.storage.local.set({ copiedItems: kept });
   };
 
+  const clearAllItems = () => {
+    if (window.confirm('Are you sure you want to delete all items, including favorites? This cannot be undone.')) {
+      setAllItems([]);
+      chrome.storage.local.set({ copiedItems: [] });
+    }
+  };
+
   const hasNonFavorites = allItems.some(item => !item.favorite);
 
   const handleItemClick = async (item: CopiedItem) => {
@@ -347,6 +354,19 @@ const Popup = () => {
                     </p>
                   )}
                 </div>
+
+                <div style={{ borderTop: '1px solid var(--border)', margin: '16px 0' }} />
+
+                <button
+                  className="btn-danger"
+                  onClick={clearAllItems}
+                  disabled={allItems.length === 0}
+                >
+                  Remove ALL items
+                </button>
+                <p style={{ marginTop: 6, color: 'var(--muted)' }}>
+                  This will permanently delete all copied items, including your favorites.
+                </p>
               </div>
             </div>
           </div>
@@ -489,6 +509,19 @@ const Popup = () => {
                   </p>
                 )}
               </div>
+
+              <div style={{ borderTop: '1px solid var(--border)', margin: '16px 0' }} />
+
+              <button
+                className="btn-danger"
+                onClick={clearAllItems}
+                disabled={allItems.length === 0}
+              >
+                Remove ALL items
+              </button>
+              <p style={{ marginTop: 6, color: 'var(--muted)' }}>
+                This will permanently delete all copied items, including your favorites.
+              </p>
             </div>
           </div>
         </div>
