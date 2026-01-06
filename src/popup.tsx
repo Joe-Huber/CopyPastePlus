@@ -61,7 +61,7 @@ const Popup = () => {
     return () => {
       chrome.storage.onChanged.removeListener(updateItems);
     };
-  }, []);
+  }, [hideFavorites, hideMostUsed, hideMostRecent]);
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -459,7 +459,7 @@ const Popup = () => {
                   />
                   Favorites
                 </label>
-                <label style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
                   <input
                     type="checkbox"
                     checked={hideMostUsed}
@@ -471,7 +471,7 @@ const Popup = () => {
                   />
                   Most Used
                 </label>
-                <label style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
                   <input
                     type="checkbox"
                     checked={hideMostRecent}
