@@ -7,7 +7,7 @@ interface CopiedItem {
 }
 
 function updateStorageWithText(newText: string) {
-  chrome.storage.local.get({ copiedItems: [] }, (result) => {
+  chrome.storage.local.get({ copiedItems: [] }, (result: { copiedItems: CopiedItem[] | string[] }) => {
     console.log("Current items from storage:", result.copiedItems);
     let items: any = result.copiedItems;
 
@@ -165,7 +165,7 @@ async function writeClipboard(text: string): Promise<void> {
   await writeClipboardInActiveTab(text);
 }
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((request: any, sender: any, sendResponse: (response?: any) => void) => {
   console.log("Background script received a message:", request);
 
   if (request.type === 'copiedText') {

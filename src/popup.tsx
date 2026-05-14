@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 interface CopiedItem {
   id: string;
@@ -26,12 +26,20 @@ const Popup = () => {
 
   useEffect(() => {
     const updateItems = () => {
-      chrome.storage.local.get({ copiedItems: [], truncateItems: true, hideFavorites: false, hideMostUsed: false, hideMostRecent: false, themeMode: 'system', theme: null }, (result) => {
-        let items = result.copiedItems;
+      chrome.storage.local.get({ copiedItems: [], truncateItems: true, hideFavorites: false, hideMostUsed: false, hideMostRecent: false, themeMode: 'system', theme: null }, (result: {
+        copiedItems: CopiedItem[] | string[];
+        truncateItems: boolean;
+        hideFavorites: boolean;
+        hideMostUsed: boolean;
+        hideMostRecent: boolean;
+        themeMode: 'system' | 'dark' | 'light';
+        theme: 'dark' | 'light' | null;
+      }) => {
+        let items: CopiedItem[] = result.copiedItems as CopiedItem[];
         if (items.length > 0 && typeof items[0] === 'string') {
-          items = items.map((text: any) => ({
+          items = (items as unknown as string[]).map((text) => ({
             id: self.crypto.randomUUID(),
-            text: text as string,
+            text,
             timestamp: Date.now(),
             favorite: false,
             count: 1,
@@ -168,7 +176,7 @@ const Popup = () => {
     }
 
     try {
-      chrome.runtime.sendMessage({ type: 'popupCopy', text }, (resp) => {
+      chrome.runtime.sendMessage({ type: 'popupCopy', text }, (resp: { ok?: boolean } | undefined) => {
         if (resp && resp.ok) flash();
       });
     } catch (err) {
@@ -530,4 +538,8 @@ const Popup = () => {
   );
 };
 
-ReactDOM.render(<Popup />, document.getElementById('root'));
+const root = document.getElementById('root');
+
+if (root) {
+  createRoot(root).render(<Popup />);
+}
